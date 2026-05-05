@@ -69,7 +69,7 @@ class JsonDb {
     
     // SELECT * FROM users WHERE email = ?
     if (normalizedSql.includes('select') && normalizedSql.includes('from users') && normalizedSql.includes('where email =')) {
-      return this.data.users.filter(u => u.email === values[0]);
+      return this.data.users.filter(u => u.email.toLowerCase() === values[0].toLowerCase());
     }
 
     // SELECT * FROM users WHERE id = ?
@@ -83,9 +83,9 @@ class JsonDb {
         id: this.data.users.length + 1,
         email: values[0],
         password: values[1],
-        role: values[2] || 'patient',
-        first_name: values[3] || '',
-        last_name: values[4] || '',
+        first_name: values[2] || '',
+        last_name: values[3] || '',
+        role: values[4] || 'patient',
         is_active: true,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
