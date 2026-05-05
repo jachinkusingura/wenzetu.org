@@ -111,10 +111,13 @@ const LoginView: React.FC = () => {
 
     try {
       const normalizedEmail = email.trim().toLowerCase();
+      console.log('Login attempt for:', normalizedEmail);
       await login(normalizedEmail, password);
+      console.log('Login successful, navigating...');
       navigate('/patient/dashboard');
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Login failed. Please try again.');
+      console.error('Login component error:', err);
+      setError(err.response?.data?.error || err.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -199,18 +202,18 @@ const LoginView: React.FC = () => {
         <button
           type="button"
           onClick={handleGoogleSignIn}
-          className="flex items-center justify-center gap-3 py-3 px-4 rounded-xl border border-neutral-200 hover:border-primary-300 hover:bg-primary-50 transition-all active:scale-95 group"
+          className="flex items-center justify-center gap-3 py-3 px-4 rounded-xl border-2 border-neutral-100 bg-white hover:border-blue-400 hover:bg-blue-50 transition-all active:scale-95 shadow-sm group"
         >
-          <Icon name="google" size={24} />
-          <span className="font-bold text-neutral-700 text-sm">Google</span>
+          <Icon name="google" size={20} />
+          <span className="font-bold text-neutral-700 text-xs sm:text-sm group-hover:text-blue-600 transition-colors">Google</span>
         </button>
         <button
           type="button"
           onClick={handleAppleSignIn}
           className="flex items-center justify-center gap-3 py-3 px-4 rounded-xl bg-black text-white hover:bg-neutral-800 transition-all active:scale-95 shadow-lg shadow-neutral-200"
         >
-          <Icon name="apple" size={24} />
-          <span className="font-bold text-sm">Apple</span>
+          <Icon name="apple" size={20} />
+          <span className="font-bold text-xs sm:text-sm">Apple</span>
         </button>
       </div>
 
