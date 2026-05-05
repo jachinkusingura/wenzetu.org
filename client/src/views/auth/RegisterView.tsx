@@ -51,6 +51,19 @@ const RegisterView: React.FC = () => {
           auto_select: false
         });
 
+        // Render the real Google button
+        window.google.accounts.id.renderButton(
+          document.getElementById("googleButton"),
+          { 
+            theme: "outline", 
+            size: "large", 
+            width: "100%",
+            text: "signup_with",
+            shape: "rectangular",
+            logo_alignment: "left"
+          }
+        );
+
         // Apple setup
         if (window.AppleID) {
           window.AppleID.auth.init({
@@ -252,22 +265,18 @@ const RegisterView: React.FC = () => {
       </div>
 
       {/* Social Sign Up */}
-      <div className="grid grid-cols-2 gap-4">
-        <button
-          type="button"
-          onClick={handleGoogleSignUp}
-          className="flex items-center justify-center gap-3 py-3 px-4 rounded-xl border border-neutral-200 hover:border-primary-300 hover:bg-primary-50 transition-all active:scale-95 group"
-        >
-          <Icon name="google" size={24} />
-          <span className="font-bold text-neutral-700 text-sm">Google</span>
-        </button>
+      <div className="space-y-4">
+        {/* Native Google Button */}
+        <div id="googleButton" className="w-full h-[44px]"></div>
+
+        {/* Apple Button */}
         <button
           type="button"
           onClick={handleAppleSignUp}
-          className="flex items-center justify-center gap-3 py-3 px-4 rounded-xl bg-black text-white hover:bg-neutral-800 transition-all active:scale-95 shadow-lg shadow-neutral-200"
+          className="w-full h-[44px] flex items-center justify-center gap-3 bg-black text-white rounded-lg hover:bg-neutral-800 transition-all active:scale-[0.98] shadow-sm font-semibold text-sm"
         >
-          <Icon name="apple" size={24} />
-          <span className="font-bold text-sm">Apple</span>
+          <Icon name="apple" size={18} />
+          <span>Continue with Apple</span>
         </button>
       </div>
 
