@@ -22,14 +22,17 @@ const LoginView: React.FC = () => {
   useEffect(() => {
     // Initialize Google Identity Services
     try {
-      if (window.google) {
+      if (window.google && !window.google._initialized) {
         window.google.accounts.id.initialize({
           client_id: "782937402934-hb-healthbridge-app.apps.googleusercontent.com", 
           callback: handleGoogleResponse,
           auto_select: false,
           cancel_on_tap_outside: true
         });
+        window.google._initialized = true;
+      }
 
+      if (window.google) {
         // Render the real Google button
         window.google.accounts.id.renderButton(
           document.getElementById("googleButton"),
@@ -42,6 +45,7 @@ const LoginView: React.FC = () => {
             logo_alignment: "left"
           }
         );
+      }
 
         // Initialize Apple Sign In
         if (window.AppleID) {
