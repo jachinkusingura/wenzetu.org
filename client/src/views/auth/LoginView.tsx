@@ -46,19 +46,22 @@ const LoginView: React.FC = () => {
           }
         );
       }
+    } catch (error) {
+      console.warn("Google SDK init error:", error);
+    }
 
-        // Initialize Apple Sign In
-        if (window.AppleID) {
-          window.AppleID.auth.init({
-            clientId: 'com.healthbridge.app.signin',
-            scope: 'name email',
-            redirectURI: window.location.origin + '/login',
-            usePopup: true
-          });
-        }
+    // Initialize Apple Sign In
+    try {
+      if (window.AppleID) {
+        window.AppleID.auth.init({
+          clientId: 'com.healthbridge.app.signin',
+          scope: 'name email',
+          redirectURI: window.location.origin + '/login',
+          usePopup: true
+        });
       }
     } catch (error) {
-      console.warn("Auth SDK init error:", error);
+      console.warn("Apple SDK init error:", error);
     }
   }, []);
 
