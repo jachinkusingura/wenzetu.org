@@ -1,0 +1,44 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "email": "test@example.com",
+      "password": "password123",
+      "role": "patient",
+      "first_name": "Test",
+      "last_name": "User",
+      "is_active": true,
+      "created_at": "2026-05-05T07:28:00Z",
+      "updated_at": "2026-05-05T07:28:00Z"
+    }
+  ],
+  "clinics": [
+    {
+      "id": 1,
+      "name": "HealthBridge Main Clinic",
+      "address": "123 Healthcare Ave",
+      "city": "Medical City",
+      "is_active": true,
+      "is_verified": true,
+      "rating": 4.8,
+      "total_reviews": 120
+    }
+  ],
+  "services": [
+    {
+      "id": 1,
+      "clinic_id": 1,
+      "name": "General Consultation",
+      "price": 50
+    }
+  ],
+  "appointments": [],
+  "medicines": [],
+  "medicine_inventory": [],
+  "reviews": [],
+  "saved_clinics": [],
+  "notifications": [],
+  "specializations": [],
+  "doctors": [],
+  "doctor_specializations": []
+}
