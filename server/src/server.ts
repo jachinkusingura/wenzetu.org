@@ -4,6 +4,8 @@ import 'dotenv/config';
 import authRoutes from './routes/authRoutes.js';
 import patientRoutes from './routes/patientRoutes.js';
 import searchRoutes from './routes/searchRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
+import clinicAdminRoutes from './routes/clinicAdminRoutes.js';
 
 const app: Express = express();
 const PORT = process.env.PORT || 5000;
@@ -29,6 +31,8 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/patient', patientRoutes);
 app.use('/api/search', searchRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/clinic-admin', clinicAdminRoutes);
 
 // Health check
 app.get('/health', (_req: Request, res: Response) => {

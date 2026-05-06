@@ -6,11 +6,13 @@ export interface RegisterPayload {
   password: string;
   first_name: string;
   last_name: string;
+  role?: string;
 }
 
 export interface LoginPayload {
   email: string;
   password: string;
+  role?: string;
 }
 
 export interface AuthResponse {

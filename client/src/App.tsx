@@ -11,9 +11,13 @@ import PatientDashboardView from './views/patient/PatientDashboardView';
 import PatientAppointmentsView from './views/patient/PatientAppointmentsView';
 import PatientSavedClinicsView from './views/patient/PatientSavedClinicsView';
 import PatientProfileView from './views/patient/PatientProfileView';
+import HealthBridgeAdminDashboard from './views/admin/HealthBridgeAdminDashboard';
+import ClinicAdminDashboardView from './views/clinic/ClinicAdminDashboardView';
 
 // Layouts
 import PatientLayout from './views/layouts/PatientLayout';
+import AdminLayout from './views/layouts/AdminLayout';
+import ClinicLayout from './views/layouts/ClinicLayout';
 import AuthLayout from './views/layouts/AuthLayout';
 
 function App() {
@@ -43,6 +47,32 @@ function App() {
             <Route path="appointments" element={<PatientAppointmentsView />} />
             <Route path="saved-clinics" element={<PatientSavedClinicsView />} />
             <Route path="profile" element={<PatientProfileView />} />
+          </Route>
+
+          {/* Admin routes */}
+          <Route
+            path="/admin/*"
+            element={
+              <RoleGuard allowedRoles={['hb_admin']}>
+                <AdminLayout />
+              </RoleGuard>
+            }
+          >
+            <Route index element={<HealthBridgeAdminDashboard />} />
+            <Route path="dashboard" element={<HealthBridgeAdminDashboard />} />
+          </Route>
+
+          {/* Clinic routes */}
+          <Route
+            path="/clinic/*"
+            element={
+              <RoleGuard allowedRoles={['clinic_admin']}>
+                <ClinicLayout />
+              </RoleGuard>
+            }
+          >
+            <Route index element={<ClinicAdminDashboardView />} />
+            <Route path="dashboard" element={<ClinicAdminDashboardView />} />
           </Route>
         </Routes>
       </AuthProvider>

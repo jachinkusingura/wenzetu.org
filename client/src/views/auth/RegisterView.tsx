@@ -9,7 +9,8 @@ const RegisterView: React.FC = () => {
     lastName: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    role: 'patient'
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -146,8 +147,16 @@ const RegisterView: React.FC = () => {
 
     try {
       const normalizedEmail = formData.email.trim().toLowerCase();
-      await register(normalizedEmail, formData.password, formData.firstName, formData.lastName);
-      navigate('/patient/dashboard');
+      await register(normalizedEmail, formData.password, formData.firstName, formData.lastName, formData.role);
+      
+      // Role-based redirection
+      if (formData.role === 'hb_admin') {
+        navigate('/admin/dashboard');
+      } else if (formData.role === 'clinic_admin') {
+        navigate('/clinic/dashboard');
+      } else {
+        navigate('/patient/dashboard');
+      }
     } catch (err: any) {
       setError(err.response?.data?.error || 'Registration failed. Please try again.');
     } finally {
@@ -241,6 +250,23 @@ const RegisterView: React.FC = () => {
             placeholder="••••••••"
             className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
           />
+        </div>
+
+        {/* Role */}
+        <div>
+          <label className="block text-sm font-semibold text-neutral-900 mb-2">
+            Sign up as
+          </label>
+          <select
+            name="role"
+            value={formData.role}
+            onChange={(e: any) => handleChange(e)}
+            className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all bg-white"
+          >
+            <option value="patient">Community Member</option>
+            <option value="clinic_admin">Clinical Administrator</option>
+            <option value="hb_admin">HealthBridge Admin</option>
+          </select>
         </div>
 
         {/* Terms */}

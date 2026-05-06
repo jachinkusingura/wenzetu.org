@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>HealthBridge – Role‑Based Health Locator</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        }
+        body {
+            background: #f0f7f5;
+            min-height: 100vh;
+        }
+        .navbar {
+            background: #1a3c34;
+            color: white;
+            padding: 0.8rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .nav-container {
+            max-width: 1400px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            flex-wrap: wrap;
+        }
+        .logo {
+            font-size: 1.6rem;
+            font-weight: bold;
+        }
+        .logo span { color: #f4c542; }
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .nav-links button {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 25px auto;
+            padding: 0 20px;
+        }
+        .auth-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+        }
+        .auth-card {
+            background: white;
+            border-radius: 28px;
+            padding: 30px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+        .auth-card h2 {
+            color: #1a3c34;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 30px;
+            border: 1px solid #ccc;
+        }
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-primary {
+            background: #1e6f5c;
+            color: white;
+        }
+        .switch-link {
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+        .switch-link a {
+            color: #1e6f5c;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .hero {
+            background: linear-gradient(135deg, #1e6f5c, #289672);
+            border-radius: 28px;
+            padding: 35px 25px;
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .search-box {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .search-box input, .search-box select, .search-box button {
+            padding: 12px 18px;
+            border-radius: 50px;
+            border: none;
+            font-size: 1rem;
+        }
+        .search-box input { width: 250px; }
+        .search-box button {
+            background: #f4c542;
+            color: #1a3c34;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .location-btn {
+            background: #2c3e50 !important;
+            color: white !important;
+        }
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 60px;
+            margin-bottom: 25px;
+            align-items: center;
+        }
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f0f2f5;
+            padding: 5px 15px;
+            border-radius: 40px;
+        }
+        .results-layout {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        .map-container {
+            flex: 1.3;
+            height: 500px;
+            border-radius: 20px;
+            overflow: hidden;
+            background: #e9e9e9;
+        }
+        .list-container {
+            flex: 0.9;
+            max-height: 500px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 20px;
+            padding: 12px;
+        }
+        .clinic-card {
+            background: white;
+            border-radius: 18px;
+            padding: 14px;
+            margin-bottom: 14px;
+            border: 1px solid #e0e7ed;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .clinic-card:hover { border-color: #1e6f5c; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .clinic-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #1a3c34;
+            display: flex;
+            justify-content: space-between;
+        }
+        .verified { background: #27ae60; color: white; padding: 2px 8px; border-radius: 20px; font-size: 0.7rem; }
+        .service-tag {
+            background: #e6f7f0; color: #1e6f5c; padding: 3px 10px; border-radius: 20px; font-size: 0.7rem; display: inline-block; margin: 3px 5px 3px 0;
+        }
+        .hours { font-size: 0.8rem; color: #2c3e50; background: #f8f9fa; padding: 4px 8px; border-radius: 12px; display: inline-block; margin-top: 5px; }
+        .btn-sm {
+            background: #1e6f5c; color: white; border: none; padding: 6px 14px; border-radius: 30px; cursor: pointer; font-size: 0.75rem; margin-top: 8px;
+        }
+        .admin-panel, .clinic-admin-panel {
+            background: white;
+            border-radius: 24px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .form-row input, .form-row select, .form-row textarea {
+            padding: 8px 12px;
+            border-radius: 30px;
+            border: 1px solid #ccc;
+            flex: 1;
+        }
+        .privacy-note {
+            background: #fff3cd;
+            border-left: 5px solid #f4c542;
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 12px;
+            font-size: 0.85rem;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 24px;
+            padding: 25px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #1a3c34;
+            color: #ccc;
+            margin-top: 50px;
+        }
+        @media (max-width: 800px) {
+            .results-layout { flex-direction: column; }
+            .map-container { height: 350px; }
+        }
+        .error-msg { color: #e74c3c; margin-top: 10px; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>\n
+    const API_URL = 'http://localhost:3000/api';
+    let currentUser = null;
+    let currentMapInstance = null;
+    let currentMarkers = [];
+    let clinicsData = [];
+    let articles = [];
+
+    function getHeaders() {
+        return {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+        };
+    }
+
+    function showAuthScreen(showLogin = true) {
+        const app = document.getElementById('app');
+        if (showLogin) {
+            app.innerHTML = `
+                <div class="auth-screen">
+                    <div class="auth-card">
+                        <h2>🏥 Welcome to HealthBridge</h2>
+                        <div id="loginForm">
+                            <div class="form-group"><label>Username</label><input type="text" id="loginUsername" placeholder="Enter username"></div>
+                            <div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="Password"></div>
+                            <div class="form-group"><label>Sign in as</label>
+                                <select id="loginRole">
+                                    <option value="community">User (Community)</option>
+                                    <option value="clinic_admin">Clinic Administrator</option>
+                                    <option value="healthbridge_admin">HealthBridge Administrator</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary" onclick="handleLogin()">Login</button>
+                            <div class="switch-link">Don't have an account? <a onclick="showAuthScreen(false)">Register</a></div>
+                            <div id="loginError" class="error-msg"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            app.innerHTML = `
+                <div class="auth-screen">
+                    <div class="auth-card">
+                        <h2>Create Account</h2>
+                        <div id="registerForm">
+                            <div class="form-group"><label>Full Name</label><input id="regFullName" placeholder="Full name"></div>
+                            <div class="form-group"><label>Username</label><input id="regUsername" placeholder="Username"></div>
+                            <div class="form-group"><label>Email</label><input id="regEmail" placeholder="Email"></div>
+                            <div class="form-group"><label>Phone</label><input id="regPhone" placeholder="Phone"></div>
+                            <div class="form-group"><label>Password</label><input type="password" id="regPassword" placeholder="Password"></div>
+                            <div class="form-group"><label>Role</label>
+                                <select id="regRole">
+                                    <option value="community">Community Member</option>
+                                    <option value="clinic_admin">Clinic Administrator</option>
+                                    <option value="healthbridge_admin">HealthBridge Administrator</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary" onclick="handleRegister()">Register</button>
+                            <div class="switch-link">Already have an account? <a onclick="showAuthScreen(true)">Login</a></div>
+                            <div id="registerError" class="error-msg"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    window.handleLogin = async function() {
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        const role = document.getElementById('loginRole').value;
+        
+        try {
+            const res = await fetch(API_URL + '/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password, role })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error);
+            
+            localStorage.setItem('token', data.token);
+            currentUser = data.user;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            renderRoleDashboard();
+        } catch (err) {
+            document.getElementById('loginError').innerText = err.message;
+        }
+    };
+
+    window.handleRegister = async function() {
+        const fullName = document.getElementById('regFullName').value;
+        const username = document.getElementById('regUsername').value;
+        const email = document.getElementById('regEmail').value;
+        const phone = document.getElementById('regPhone').value;
+        const password = document.getElementById('regPassword').value;
+        const role = document.getElementById('regRole').value;
+        
+        if (!username || !password || !fullName) {
+            document.getElementById('registerError').innerText = 'Please fill all fields';
+            return;
+        }
+
+        try {
+            const res = await fetch(API_URL + '/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fullName, username, email, phone, password, role })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error);
+            
+            alert('Registration successful! Please login.');
+            showAuthScreen(true);
+        } catch (err) {
+            document.getElementById('registerError').innerText = err.message;
+        }
+    };
+
+    async function loadData() {
+        if (!currentUser) return;
+        try {
+            const resC = await fetch(API_URL + '/clinics', { headers: getHeaders() });
+            clinicsData = await resC.json();
+            
+            const resA = await fetch(API_URL + '/articles', { headers: getHeaders() });
+            articles = await resA.json();
+        } catch(e) { console.error("Error fetching data", e); }
+    }
+
+    async function renderRoleDashboard() {
+        if (!currentUser) { showAuthScreen(true); return; }
+        
+        await loadData();
+        
+        const role = currentUser.role;
+        const app = document.getElementById('app');
+        // Build navbar
+        let navbarHtml = `
+            <nav class="navbar">
+                <div class="nav-container">
+                    <div class="logo">🏥 Health<span>Bridge</span></div>
+                    <div class="nav-links">
+                        ${role === 'community' ? '<button id="navHomeBtn">Home</button><button id="navSearchBtn">Find Clinics</button><button id="navArticlesBtn">Health Articles</button>' : ''}
+                        ${role === 'clinic_admin' ? '<button id="navClinicAdminBtn">My Clinic Panel</button>' : ''}
+                        ${role === 'healthbridge_admin' ? '<button id="navAdminBtn">Admin Panel</button>' : ''}
+                        <button id="logoutBtn">Logout</button>
+                    </div>
+                </div>
+            </nav>
+            <main id="dashboardContent"></main>
+            <footer>© 2025 HealthBridge – Privacy-first health locator</footer>
+        `;
+        app.innerHTML = navbarHtml;
+        
+        setTimeout(() => {
+            if (role === 'community') {
+                document.getElementById('navHomeBtn')?.addEventListener('click', () => renderCommunityHome());
+                document.getElementById('navSearchBtn')?.addEventListener('click', () => renderSearchMapPage());
+                document.getElementById('navArticlesBtn')?.addEventListener('click', () => renderArticlesPage());
+                renderCommunityHome();
+            } else if (role === 'clinic_admin') {
+                document.getElementById('navClinicAdminBtn')?.addEventListener('click', () => renderClinicAdminPanel());
+                renderClinicAdminPanel();
+            } else if (role === 'healthbridge_admin') {
+                document.getElementById('navAdminBtn')?.addEventListener('click', () => renderHealthBridgeAdmin());
+                renderHealthBridgeAdmin();
+            }
+            document.getElementById('logoutBtn')?.addEventListener('click', () => {
+                currentUser = null;
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('token');
+                showAuthScreen(true);
+            });
+        }, 10);
+    }
+
+    // ----- COMMUNITY DASHBOARD -----
+    function renderCommunityHome() {
+        const content = document.getElementById('dashboardContent');
+        const featured = clinicsData.filter(c => c.verified && !c.sensitive).slice(0,6);
+        const safeArticles = articles.filter(a => !a.sensitive);
+        content.innerHTML = `
+            <div class="container">
+                <div class="hero">
+                    <h1>🏥 Find Safe, Verified Health Services</h1>
+                    <div class="search-box">
+                        <input type="text" id="homeLocation" placeholder="District (e.g., Mbarara)">
+                        <select id="homeService"><option value="">All Services</option><option>Maternity</option><option>General Consultation</option><option>Pharmacy</option><option>HIV/AIDS</option><option>Mental Health</option><option>STD Testing</option></select>
+                        <button onclick="quickSearch()">🔍 Search</button>
+                        <button class="location-btn" onclick="useMyLocation()">📍 Near Me</button>
+                    </div>
+                    <div class="privacy-note">🔒 Sensitive searches (HIV, Mental health, STDs) are never logged & results are shown only after consent.</div>
+                </div>
+                <div id="homeResults"></div>
+                <h2>📌 Featured Clinics</h2>
+                <div id="featuredClinics" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:20px;"></div>
+                <h2>📰 Health Articles</h2>
+                <div id="articleList" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:20px;"></div>
+            </div>
+        `;
+        document.getElementById('featuredClinics').innerHTML = featured.map(c => clinicCardHtml(c)).join('');
+        document.getElementById('articleList').innerHTML = safeArticles.map(a => `<div class="clinic-card"><h3>${a.title}</h3><p>${a.content.substring(0,100)}</p></div>`).join('');
+        window.quickSearch = quickSearch;
+        window.useMyLocation = useMyLocation;
+    }
+
+    function clinicCardHtml(c) {
+        return `<div class="clinic-card" onclick="viewClinicDetails(${c.id})">
+            <div class="clinic-name">${c.name} ${c.verified ? '<span class="verified">✓ Verified</span>' : ''}</div>
+            <div>📍 ${c.district} · ${c.parish}</div>
+            <div class="services">${(c.services||[]).map(s => `<span class="service-tag">${s}</span>`).join('')}</div>
+            <div class="hours">🕒 ${c.opening} – ${c.closing}</div>
+            <button class="btn-sm">View Details</button>
+        </div>`;
+    }
+
+    async function quickSearch() {
+        let location = document.getElementById('homeLocation')?.value.trim() || '';
+        let service = document.getElementById('homeService')?.value || '';
+        let results = clinicsData.filter(c => !c.sensitive);
+        if (location) results = results.filter(c => c.district.toLowerCase().includes(location.toLowerCase()));
+        if (service) results = results.filter(c => (c.services||[]).includes(service));
+        let sensitiveTerms = ["hiv","aids","mental","std","sexually","depression"];
+        let isSensitive = sensitiveTerms.some(term => `${location} ${service}`.toLowerCase().includes(term));
+        if (isSensitive && !confirm("⚠️ You are searching for sensitive health services. HealthBridge will NOT store this search. Continue?")) {
+            document.getElementById('homeResults').innerHTML = `<div class="privacy-note">Search cancelled for privacy reasons.</div>`;
+            return;
+        }
+        if (service === "Mental Health") results = [...results, ...clinicsData.filter(c => (c.services||[]).includes("Mental Health"))];
+        if (service === "STD Testing") results = [...results, ...clinicsData.filter(c => (c.services||[]).includes("STD Testing"))];
+        results = [...new Map(results.map(c => [c.id, c])).values()];
+        document.getElementById('homeResults').innerHTML = `<h3>Search Results (${results.length})</h3><div style="display:grid; gap:15px;">${results.map(c => clinicCardHtml(c)).join('')}</div>`;
+    }
+
+    function useMyLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(pos => {
+                let nearest = clinicsData.map(c => ({...c, dist: Math.hypot(c.lat-pos.coords.latitude, c.lng-pos.coords.longitude)})).sort((a,b)=>a.dist-b.dist).slice(0,8);
+                document.getElementById('homeResults').innerHTML = `<h3>Clinics near you</h3><div style="display:grid; gap:15px;">${nearest.map(c => clinicCardHtml(c)).join('')}</div>`;
+            });
+        } else alert("Geolocation not supported");
+    }
+
+    function renderSearchMapPage() {
+        const content = document.getElementById('dashboardContent');
+        content.innerHTML = `
+            <div class="container">
+                <div class="filters">
+                    <div class="filter-group"><label>📍 District</label><input type="text" id="filterDistrict" placeholder="e.g., Kampala"></div>
+                    <div class="filter-group"><label>🏥 Service</label><select id="filterService"><option value="">All</option><option>Maternity</option><option>General Consultation</option><option>Pharmacy</option><option>HIV/AIDS</option><option>Mental Health</option><option>STD Testing</option></select></div>
+                    <div class="filter-group"><label>💊 Medicine</label><input type="text" id="filterMedicine" placeholder="e.g., Amoxicillin"></div>
+                    <button class="btn-sm" onclick="applyMapFilters()">🔍 Filter</button>
+                    <button class="location-btn" onclick="useMyLocationMap()">📍 My Location</button>
+                </div>
+                <div class="results-layout">
+                    <div id="mapView" class="map-container"></div>
+                    <div id="listView" class="list-container">Loading map...</div>
+                </div>
+            </div>
+        `;
+        setTimeout(() => initMap(), 100);
+        window.applyMapFilters = applyMapFilters;
+        window.useMyLocationMap = useMyLocationMap;
+    }
+
+    function initMap() {
+        if (currentMapInstance) currentMapInstance.remove();
+        currentMapInstance = L.map('mapView').setView([0.3136, 32.5811], 7);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
+        }).addTo(currentMapInstance);
+        applyMapFilters();
+    }
+
+    function applyMapFilters() {
+        const district = document.getElementById('filterDistrict')?.value.trim() || '';
+        const service = document.getElementById('filterService')?.value || '';
+        const medicine = document.getElementById('filterMedicine')?.value.trim() || '';
+        let filtered = clinicsData.filter(c => !c.sensitive);
+        if (district) filtered = filtered.filter(c => c.district.toLowerCase().includes(district.toLowerCase()));
+        if (service) filtered = filtered.filter(c => (c.services||[]).includes(service));
+        if (medicine) filtered = filtered.filter(c => (c.medicines||[]).some(m => m.toLowerCase().includes(medicine.toLowerCase())));
+        updateMapAndList(filtered);
+    }
+
+    function updateMapAndList(clinicsArray) {
+        if (!currentMapInstance) return;
+        currentMarkers.forEach(m => currentMapInstance.removeLayer(m));
+        currentMarkers = [];
+        const bounds = [];
+        clinicsArray.forEach(c => {
+            const marker = L.marker([c.lat, c.lng]).addTo(currentMapInstance);
+            marker.bindPopup(`<b>${c.name}</b><br>${c.district}<br>🕒 ${c.opening} - ${c.closing}<br><button onclick="viewClinicDetails(${c.id})">Details</button>`);
+            currentMarkers.push(marker);
+            bounds.push([c.lat, c.lng]);
+        });
+        if (bounds.length) currentMapInstance.fitBounds(bounds);
+        else currentMapInstance.setView([0.3136, 32.5811], 6);
+        const listDiv = document.getElementById('listView');
+        if (clinicsArray.length === 0) listDiv.innerHTML = '<div style="padding:20px;">No clinics found.</div>';
+        else listDiv.innerHTML = clinicsArray.map(c => clinicCardHtml(c)).join('');
+    }
+
+    function useMyLocationMap() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(pos => {
+                currentMapInstance.setView([pos.coords.latitude, pos.coords.longitude], 12);
+                let nearest = clinicsData.map(c => ({...c, dist: Math.hypot(c.lat-pos.coords.latitude, c.lng-pos.coords.longitude)})).sort((a,b)=>a.dist-b.dist).slice(0,8);
+                updateMapAndList(nearest);
+            });
+        }
+    }
+
+    function renderArticlesPage() {
+        const content = document.getElementById('dashboardContent');
+        const safeArts = articles.filter(a => !a.sensitive);
+        content.innerHTML = `<div class="container"><h2>📚 Health Education</h2><div style="display:grid; gap:20px;">${safeArts.map(a => `<div class="clinic-card"><h3>${a.title}</h3><p>${a.content}</p></div>`).join('')}</div></div>`;
+    }
+
+    // ----- CLINIC ADMIN PANEL -----
+    function renderClinicAdminPanel() {
+        const myClinic = clinicsData.find(c => c.id === currentUser.clinicId);
+        if (!myClinic) {
+            document.getElementById('dashboardContent').innerHTML = `<div class="container"><p>No clinic assigned. Contact main admin.</p></div>`;
+            return;
+        }
+        const content = document.getElementById('dashboardContent');
+        content.innerHTML = `
+            <div class="container">
+                <h2>🏥 Clinic Admin: ${myClinic.name}</h2>
+                <div class="admin-panel">
+                    <div class="form-row">
+                        <input type="text" id="clinicName" value="${myClinic.name}" placeholder="Clinic Name">
+                        <input type="text" id="clinicPhone" value="${myClinic.phone}" placeholder="Phone">
+                        <input type="text" id="clinicOpen" value="${myClinic.opening}" placeholder="Opening Hour">
+                        <input type="text" id="clinicClose" value="${myClinic.closing}" placeholder="Closing Hour">
+                    </div>
+                    <div class="form-row">
+                        <input type="text" id="newService" placeholder="Add new service (e.g., Dental)">
+                        <button class="btn-sm" onclick="addClinicService()">➕ Add Service</button>
+                    </div>
+                    <div class="form-row">
+                        <label>Update Medicine Stock:</label>
+                        <select id="medicineSelect">${(myClinic.medicines||[]).map(m => `<option>${m}</option>`).join('')}</select>
+                        <select id="stockStatus"><option>In Stock</option><option>Low Stock</option><option>Out of Stock</option></select>
+                        <button class="btn-sm" onclick="updateStock()">Update Stock</button>
+                    </div>
+                    <button class="btn-sm" onclick="saveClinicChanges()">💾 Save All Changes</button>
+                </div>
+            </div>
+        `;
+        window.currentClinic = myClinic;
+        window.addClinicService = function() {
+            let svc = document.getElementById('newService').value.trim();
+            if (svc && window.currentClinic) {
+                window.currentClinic.services.push(svc);
+                alert(`Service "${svc}" added locally. Will be saved when you click Save All.`);
+            }
+        };
+        window.updateStock = async function() {
+            const med = document.getElementById('medicineSelect').value;
+            const stat = document.getElementById('stockStatus').value;
+            try {
+                await fetch(API_URL + '/clinics/' + window.currentClinic.id + '/stock', {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify({ medicineName: med, status: stat })
+                });
+                alert("Stock updated successfully");
+            } catch(e) { alert("Failed to update stock"); }
+        };
+        window.saveClinicChanges = async function() {
+            const name = document.getElementById('clinicName').value;
+            const phone = document.getElementById('clinicPhone').value;
+            const opening = document.getElementById('clinicOpen').value;
+            const closing = document.getElementById('clinicClose').value;
+            try {
+                await fetch(API_URL + '/clinics/' + window.currentClinic.id, {
+                    method: 'PUT',
+                    headers: getHeaders(),
+                    body: JSON.stringify({ name, phone, opening, closing, services: window.currentClinic.services })
+                });
+                alert("Clinic information saved.");
+                loadData();
+            } catch(e) { alert("Failed to save changes"); }
+        };
+    }
+
+    // ----- HEALTHBRIDGE ADMIN PANEL -----
+    function renderHealthBridgeAdmin() {
+        const content = document.getElementById('dashboardContent');
+        content.innerHTML = `
+            <div class="container">
+                <h2>⭐ HealthBridge Administrator</h2>
+                <div class="admin-panel">
+                    <p>Total clinics: ${clinicsData.length} | Verified: ${clinicsData.filter(c=>c.verified).length}</p>
+                    <button class="btn-sm" onclick="showVerifyList()">✅ Verify Clinics</button>
+                    <button class="btn-sm" onclick="generateReport()">📊 Generate Report</button>
+                    <button class="btn-sm" onclick="manageArticlesAdmin()">📝 Manage Articles</button>
+                </div>
+                <div id="adminDynamicArea"></div>
+            </div>
+        `;
+        window.showVerifyList = function() {
+            let unverified = clinicsData.filter(c => !c.verified);
+            document.getElementById('adminDynamicArea').innerHTML = `<h3>Pending Verification</h3>${unverified.map(c => `<div class="clinic-card">${c.name} <button class="btn-sm" onclick="verifyClinic(${c.id})">Verify</button></div>`).join('')}`;
+        };
+        window.verifyClinic = async function(id) {
+            try {
+                await fetch(API_URL + '/clinics/' + id + '/verify', { method: 'POST', headers: getHeaders() });
+                await loadData();
+                showVerifyList();
+                document.querySelector('.admin-panel p').innerHTML = `Total clinics: ${clinicsData.length} | Verified: ${clinicsData.filter(c=>c.verified).length}`;
+            } catch(e) { alert("Error verifying clinic"); }
+        };
+        window.generateReport = function() {
+            let report = `HEALTHBRIDGE REPORT\nTotal clinics: ${clinicsData.length}\nVerified: ${clinicsData.filter(c=>c.verified).length}\nServices: ${[...new Set(clinicsData.flatMap(c=>c.services||[]))].join(", ")}`;
+            document.getElementById('adminDynamicArea').innerHTML = `<pre style="background:white; padding:15px;">${report}</pre>`;
+        };
+        window.manageArticlesAdmin = function() {
+            let list = articles.map((a)=>`<div><b>${a.title}</b> <button onclick="deleteArticle(${a.id})">Delete</button></div>`).join('');
+            document.getElementById('adminDynamicArea').innerHTML = `${list}<hr><input id="newArtTitle" placeholder="Title"><textarea id="newArtContent" placeholder="Content"></textarea><button onclick="addArticle()">Add Article</button>`;
+        };
+        window.deleteArticle = async function(id) {
+            try {
+                await fetch(API_URL + '/articles/' + id, { method: 'DELETE', headers: getHeaders() });
+                await loadData();
+                manageArticlesAdmin();
+            } catch(e) {}
+        };
+        window.addArticle = async function() {
+            let title = document.getElementById('newArtTitle')?.value;
+            let content = document.getElementById('newArtContent')?.value;
+            if(title && content) {
+                try {
+                    await fetch(API_URL + '/articles', {
+                        method: 'POST', headers: getHeaders(),
+                        body: JSON.stringify({ title, content, category: 'General', sensitive: false })
+                    });
+                    await loadData();
+                    manageArticlesAdmin();
+                } catch(e) {}
+            }
+        };
+    }
+
+    // Shared: clinic details modal
+    window.viewClinicDetails = function(id) {
+        const clinic = clinicsData.find(c => c.id === id);
+        if (!clinic) return;
+        let modalDiv = document.getElementById('globalModal');
+        if (!modalDiv) {
+            modalDiv = document.createElement('div');
+            modalDiv.id = 'globalModal';
+            modalDiv.className = 'modal';
+            modalDiv.innerHTML = `<div class="modal-content"><span style="float:right;font-size:28px;cursor:pointer;" onclick="closeModal()">&times;</span><div id="modalBody"></div></div>`;
+            document.body.appendChild(modalDiv);
+        }
+        document.getElementById('modalBody').innerHTML = `<h2>${clinic.name}</h2><p>📍 ${clinic.district}, ${clinic.parish}<br>📞 ${clinic.phone}<br>🕒 ${clinic.opening} – ${clinic.closing}<br>💊 Medicines: ${(clinic.medicines||[]).join(', ')}<br>🏥 Services: ${(clinic.services||[]).join(', ')}</p>`;
+        modalDiv.style.display = 'flex';
+    };
+    window.closeModal = function() {
+        const modal = document.getElementById('globalModal');
+        if (modal) modal.style.display = 'none';
+    };
+
+    // Start app
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser && localStorage.getItem('token')) {
+        currentUser = JSON.parse(savedUser);
+        renderRoleDashboard();
+    } else {
+        showAuthScreen(true);
+    }
+\n</script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        }
+        body {
+            background: #f0f7f5;
+            min-height: 100vh;
+        }
+        .navbar {
+            background: #1a3c34;
+            color: white;
+            padding: 0.8rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .nav-container {
+            max-width: 1400px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            flex-wrap: wrap;
+        }
+        .logo {
+            font-size: 1.6rem;
+            font-weight: bold;
+        }
+        .logo span { color: #f4c542; }
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .nav-links button {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 25px auto;
+            padding: 0 20px;
+        }
+        .auth-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+        }
+        .auth-card {
+            background: white;
+            border-radius: 28px;
+            padding: 30px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+        .auth-card h2 {
+            color: #1a3c34;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 30px;
+            border: 1px solid #ccc;
+        }
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-primary {
+            background: #1e6f5c;
+            color: white;
+        }
+        .switch-link {
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+        .switch-link a {
+            color: #1e6f5c;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .hero {
+            background: linear-gradient(135deg, #1e6f5c, #289672);
+            border-radius: 28px;
+            padding: 35px 25px;
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .search-box {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .search-box input, .search-box select, .search-box button {
+            padding: 12px 18px;
+            border-radius: 50px;
+            border: none;
+            font-size: 1rem;
+        }
+        .search-box input { width: 250px; }
+        .search-box button {
+            background: #f4c542;
+            color: #1a3c34;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .location-btn {
+            background: #2c3e50 !important;
+            color: white !important;
+        }
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 60px;
+            margin-bottom: 25px;
+            align-items: center;
+        }
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f0f2f5;
+            padding: 5px 15px;
+            border-radius: 40px;
+        }
+        .results-layout {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        .map-container {
+            flex: 1.3;
+            height: 500px;
+            border-radius: 20px;
+            overflow: hidden;
+            background: #e9e9e9;
+        }
+        .list-container {
+            flex: 0.9;
+            max-height: 500px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 20px;
+            padding: 12px;
+        }
+        .clinic-card {
+            background: white;
+            border-radius: 18px;
+            padding: 14px;
+            margin-bottom: 14px;
+            border: 1px solid #e0e7ed;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .clinic-card:hover { border-color: #1e6f5c; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .clinic-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #1a3c34;
+            display: flex;
+            justify-content: space-between;
+        }
+        .verified { background: #27ae60; color: white; padding: 2px 8px; border-radius: 20px; font-size: 0.7rem; }
+        .service-tag {
+            background: #e6f7f0; color: #1e6f5c; padding: 3px 10px; border-radius: 20px; font-size: 0.7rem; display: inline-block; margin: 3px 5px 3px 0;
+        }
+        .hours { font-size: 0.8rem; color: #2c3e50; background: #f8f9fa; padding: 4px 8px; border-radius: 12px; display: inline-block; margin-top: 5px; }
+        .btn-sm {
+            background: #1e6f5c; color: white; border: none; padding: 6px 14px; border-radius: 30px; cursor: pointer; font-size: 0.75rem; margin-top: 8px;
+        }
+        .admin-panel, .clinic-admin-panel {
+            background: white;
+            border-radius: 24px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .form-row input, .form-row select, .form-row textarea {
+            padding: 8px 12px;
+            border-radius: 30px;
+            border: 1px solid #ccc;
+            flex: 1;
+        }
+        .privacy-note {
+            background: #fff3cd;
+            border-left: 5px solid #f4c542;
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 12px;
+            font-size: 0.85rem;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 24px;
+            padding: 25px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #1a3c34;
+            color: #ccc;
+            margin-top: 50px;
+        }
+        @media (max-width: 800px) {
+            .results-layout { flex-direction: column; }
+            .map-container { height: 350px; }
+        }
+        .error-msg { color: #e74c3c; margin-top: 10px; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+    // ---------- Mock Database (localStorage) ----------
+    function initUsers() {
+        if (!localStorage.getItem('users')) {
+            const users = [
+                { id: 1, username: "community1", password: "pass123", role: "community", fullName: "John Doe", clinicId: null },
+                { id: 2, username: "clinic_admin", password: "pass123", role: "clinic_admin", fullName: "Dr. Sarah", clinicId: 2 },
+                { id: 3, username: "healthbridge_admin", password: "pass123", role: "healthbridge_admin", fullName: "Admin User", clinicId: null }
+            ];
+            localStorage.setItem('users', JSON.stringify(users));
+        }
+    }
+    initUsers();
+
+    // ---------- Sample Clinics Data ----------
+    let clinicsData = [
+        { id: 1, name: "Ruharo Mission Hospital", lat: -0.6072, lng: 30.6545, district: "Mbarara", parish: "Ruharo", phone: "+256 700 123456", opening: "07:00", closing: "22:00", verified: true, services: ["Maternity", "General Consultation", "Pharmacy", "HIV/AIDS"], medicines: ["Amoxicillin", "Paracetamol", "Artemether"], assignedClinicAdminId: null },
+        { id: 2, name: "TASO Mbarara", lat: -0.6100, lng: 30.6500, district: "Mbarara", parish: "Kamukuzi", phone: "+256 700 789012", opening: "08:00", closing: "17:00", verified: true, services: ["HIV/AIDS", "Pharmacy", "Counseling"], medicines: ["ARVs", "Paracetamol"], assignedClinicAdminId: 2 },
+        { id: 3, name: "Good Samaritan Clinic", lat: -0.5950, lng: 30.6600, district: "Mbarara", parish: "Katete", phone: "+256 700 555666", opening: "09:00", closing: "18:00", verified: false, services: ["General Consultation", "Pharmacy"], medicines: ["Paracetamol", "Ibuprofen"], assignedClinicAdminId: null },
+        { id: 4, name: "Kampala General Hospital", lat: 0.3136, lng: 32.5811, district: "Kampala", parish: "Central", phone: "+256 312 123456", opening: "00:00", closing: "23:59", verified: true, services: ["Maternity", "Dental", "Emergency"], medicines: ["Amoxicillin", "Ciprofloxacin"], assignedClinicAdminId: null },
+        { id: 5, name: "Nsambya Hospital", lat: 0.2925, lng: 32.5850, district: "Kampala", parish: "Nsambya", phone: "+256 414 123456", opening: "07:30", closing: "21:00", verified: true, services: ["Maternity", "Paediatrics"], medicines: ["Paracetamol"], assignedClinicAdminId: null },
+        { id: 6, name: "Gulu Regional Hospital", lat: 2.7750, lng: 32.2980, district: "Gulu", parish: "Gulu City", phone: "+256 471 432111", opening: "00:00", closing: "23:59", verified: true, services: ["General Consultation", "Surgery", "HIV/AIDS"], medicines: ["Artemether", "ARVs"], assignedClinicAdminId: null },
+        { id: 7, name: "Lacor Hospital", lat: 2.7500, lng: 32.2800, district: "Gulu", parish: "Lacor", phone: "+256 392 123456", opening: "08:00", closing: "18:00", verified: true, services: ["Maternity", "Pharmacy"], medicines: ["Amoxicillin"], assignedClinicAdminId: null },
+        { id: 8, name: "Jinja Regional Hospital", lat: 0.4346, lng: 33.2049, district: "Jinja", parish: "Jinja Central", phone: "+256 434 123456", opening: "07:00", closing: "22:00", verified: true, services: ["Maternity", "General Consultation"], medicines: ["Paracetamol", "Quinine"], assignedClinicAdminId: null },
+        { id: 9, name: "Mental Health Center - Butabika", lat: 0.3333, lng: 32.6333, district: "Kampala", parish: "Butabika", phone: "+256 414 123789", opening: "08:00", closing: "17:00", verified: true, services: ["Mental Health", "Counseling"], medicines: ["Antidepressants", "Antipsychotics"], sensitive: true, assignedClinicAdminId: null },
+        { id: 10, name: "STD Clinic - Mulago", lat: 0.3391, lng: 32.5765, district: "Kampala", parish: "Mulago", phone: "+256 414 123000", opening: "09:00", closing: "16:00", verified: true, services: ["STD Testing", "Treatment"], medicines: ["Antibiotics", "Antivirals"], sensitive: true, assignedClinicAdminId: null }
+    ];
+    let articles = [
+        { id: 1, title: "Malaria Prevention", category: "Prevention", content: "Sleep under nets, clear standing water.", sensitive: false },
+        { id: 2, title: "Mental Health Awareness", category: "Mental Health", content: "It's okay to seek help. Call helpline 0800 123 456.", sensitive: true },
+        { id: 3, title: "HIV Treatment & Support", category: "HIV", content: "ART is free at government facilities.", sensitive: true },
+        { id: 4, title: "STD Prevention", category: "STD", content: "Use protection and get tested regularly.", sensitive: true }
+    ];
+
+    function saveClinics() { localStorage.setItem('clinicsData', JSON.stringify(clinicsData)); }
+    function loadClinics() {
+        const stored = localStorage.getItem('clinicsData');
+        if (stored) clinicsData = JSON.parse(stored);
+        else saveClinics();
+    }
+    loadClinics();
+
+    let currentUser = null;
+    let currentMapInstance = null;
+    let currentMarkers = [];
+
+    // ---------- UI Rendering ----------
+    function showAuthScreen(showLogin = true) {
+        const app = document.getElementById('app');
+        if (showLogin) {
+            app.innerHTML = `
+                <div class="auth-screen">
+                    <div class="auth-card">
+                        <h2>🏥 Welcome to HealthBridge</h2>
+                        <div id="loginForm">
+                            <div class="form-group"><label>Username</label><input type="text" id="loginUsername" placeholder="Enter username"></div>
+                            <div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="Password"></div>
+                            <button class="btn btn-primary" onclick="handleLogin()">Login</button>
+                            <div class="switch-link">Don't have an account? <a onclick="showAuthScreen(false)">Register</a></div>
+                            <div id="loginError" class="error-msg"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            app.innerHTML = `
+                <div class="auth-screen">
+                    <div class="auth-card">
+                        <h2>Create Account</h2>
+                        <div id="registerForm">
+                            <div class="form-group"><label>Full Name</label><input id="regFullName" placeholder="Full name"></div>
+                            <div class="form-group"><label>Username</label><input id="regUsername" placeholder="Username"></div>
+                            <div class="form-group"><label>Email</label><input id="regEmail" placeholder="Email"></div>
+                            <div class="form-group"><label>Phone</label><input id="regPhone" placeholder="Phone"></div>
+                            <div class="form-group"><label>Password</label><input type="password" id="regPassword" placeholder="Password"></div>
+                            <div class="form-group"><label>Role</label>
+                                <select id="regRole">
+                                    <option value="community">Community Member</option>
+                                    <option value="clinic_admin">Clinic Administrator</option>
+                                    <option value="healthbridge_admin">HealthBridge Administrator</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary" onclick="handleRegister()">Register</button>
+                            <div class="switch-link">Already have an account? <a onclick="showAuthScreen(true)">Login</a></div>
+                            <div id="registerError" class="error-msg"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    window.handleLogin = function() {
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        const users = JSON.parse(localStorage.getItem('users'));
+        const user = users.find(u => u.username === username && u.password === password);
+        if (!user) {
+            document.getElementById('loginError').innerText = 'Invalid username or password';
+            return;
+        }
+        currentUser = { id: user.id, username: user.username, role: user.role, clinicId: user.clinicId };
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        renderRoleDashboard();  // direct to appropriate dashboard
+    };
+
+    window.handleRegister = function() {
+        const fullName = document.getElementById('regFullName').value;
+        const username = document.getElementById('regUsername').value;
+        const email = document.getElementById('regEmail').value;
+        const phone = document.getElementById('regPhone').value;
+        const password = document.getElementById('regPassword').value;
+        const role = document.getElementById('regRole').value;
+        if (!username || !password || !fullName) {
+            document.getElementById('registerError').innerText = 'Please fill all fields';
+            return;
+        }
+        let users = JSON.parse(localStorage.getItem('users'));
+        if (users.find(u => u.username === username)) {
+            document.getElementById('registerError').innerText = 'Username already exists';
+            return;
+        }
+        const newId = users.length + 1;
+        let clinicId = null;
+        if (role === 'clinic_admin') {
+            const availableClinic = clinicsData.find(c => c.assignedClinicAdminId === null && !c.sensitive);
+            if (availableClinic) {
+                clinicId = availableClinic.id;
+                availableClinic.assignedClinicAdminId = newId;
+                saveClinics();
+            } else {
+                clinicId = 2;
+            }
+        }
+        const newUser = { id: newId, username, password, role, fullName, email, phone, clinicId };
+        users.push(newUser);
+        localStorage.setItem('users', JSON.stringify(users));
+        alert('Registration successful! Please login.');
+        showAuthScreen(true);
+    };
+
+    function renderRoleDashboard() {
+        if (!currentUser) { showAuthScreen(true); return; }
+        const role = currentUser.role;
+        const app = document.getElementById('app');
+        // Build navbar
+        let navbarHtml = `
+            <nav class="navbar">
+                <div class="nav-container">
+                    <div class="logo">🏥 Health<span>Bridge</span></div>
+                    <div class="nav-links">
+                        ${role === 'community' ? '<button id="navHomeBtn">Home</button><button id="navSearchBtn">Find Clinics</button><button id="navArticlesBtn">Health Articles</button>' : ''}
+                        ${role === 'clinic_admin' ? '<button id="navClinicAdminBtn">My Clinic Panel</button>' : ''}
+                        ${role === 'healthbridge_admin' ? '<button id="navAdminBtn">Admin Panel</button>' : ''}
+                        <button id="logoutBtn">Logout</button>
+                    </div>
+                </div>
+            </nav>
+            <main id="dashboardContent"></main>
+            <footer>© 2025 HealthBridge – Privacy-first health locator</footer>
+        `;
+        app.innerHTML = navbarHtml;
+        // Attach events and load correct panel
+        setTimeout(() => {
+            if (role === 'community') {
+                document.getElementById('navHomeBtn')?.addEventListener('click', () => renderCommunityHome());
+                document.getElementById('navSearchBtn')?.addEventListener('click', () => renderSearchMapPage());
+                document.getElementById('navArticlesBtn')?.addEventListener('click', () => renderArticlesPage());
+                renderCommunityHome(); // default for community
+            } else if (role === 'clinic_admin') {
+                document.getElementById('navClinicAdminBtn')?.addEventListener('click', () => renderClinicAdminPanel());
+                renderClinicAdminPanel();
+            } else if (role === 'healthbridge_admin') {
+                document.getElementById('navAdminBtn')?.addEventListener('click', () => renderHealthBridgeAdmin());
+                renderHealthBridgeAdmin();
+            }
+            document.getElementById('logoutBtn')?.addEventListener('click', () => {
+                currentUser = null;
+                localStorage.removeItem('currentUser');
+                showAuthScreen(true);
+            });
+        }, 10);
+    }
+
+    // ----- COMMUNITY DASHBOARD -----
+    function renderCommunityHome() {
+        const content = document.getElementById('dashboardContent');
+        const featured = clinicsData.filter(c => c.verified && !c.sensitive).slice(0,6);
+        const safeArticles = articles.filter(a => !a.sensitive);
+        content.innerHTML = `
+            <div class="container">
+                <div class="hero">
+                    <h1>🏥 Find Safe, Verified Health Services</h1>
+                    <div class="search-box">
+                        <input type="text" id="homeLocation" placeholder="District (e.g., Mbarara)">
+                        <select id="homeService"><option value="">All Services</option><option>Maternity</option><option>General Consultation</option><option>Pharmacy</option><option>HIV/AIDS</option><option>Mental Health</option><option>STD Testing</option></select>
+                        <button onclick="quickSearch()">🔍 Search</button>
+                        <button class="location-btn" onclick="useMyLocation()">📍 Near Me</button>
+                    </div>
+                    <div class="privacy-note">🔒 Sensitive searches (HIV, Mental health, STDs) are never logged & results are shown only after consent.</div>
+                </div>
+                <div id="homeResults"></div>
+                <h2>📌 Featured Clinics</h2>
+                <div id="featuredClinics" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:20px;"></div>
+                <h2>📰 Health Articles</h2>
+                <div id="articleList" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:20px;"></div>
+            </div>
+        `;
+        document.getElementById('featuredClinics').innerHTML = featured.map(c => clinicCardHtml(c)).join('');
+        document.getElementById('articleList').innerHTML = safeArticles.map(a => `<div class="clinic-card"><h3>${a.title}</h3><p>${a.content.substring(0,100)}</p></div>`).join('');
+        window.quickSearch = quickSearch;
+        window.useMyLocation = useMyLocation;
+    }
+
+    function clinicCardHtml(c) {
+        return `<div class="clinic-card" onclick="viewClinicDetails(${c.id})">
+            <div class="clinic-name">${c.name} ${c.verified ? '<span class="verified">✓ Verified</span>' : ''}</div>
+            <div>📍 ${c.district} · ${c.parish}</div>
+            <div class="services">${c.services.map(s => `<span class="service-tag">${s}</span>`).join('')}</div>
+            <div class="hours">🕒 ${c.opening} – ${c.closing}</div>
+            <button class="btn-sm">View Details</button>
+        </div>`;
+    }
+
+    async function quickSearch() {
+        let location = document.getElementById('homeLocation')?.value.trim() || '';
+        let service = document.getElementById('homeService')?.value || '';
+        let results = clinicsData.filter(c => !c.sensitive);
+        if (location) results = results.filter(c => c.district.toLowerCase().includes(location.toLowerCase()));
+        if (service) results = results.filter(c => c.services.includes(service));
+        let sensitiveTerms = ["hiv","aids","mental","std","sexually","depression"];
+        let isSensitive = sensitiveTerms.some(term => `${location} ${service}`.toLowerCase().includes(term));
+        if (isSensitive && !confirm("⚠️ You are searching for sensitive health services. HealthBridge will NOT store this search. Continue?")) {
+            document.getElementById('homeResults').innerHTML = `<div class="privacy-note">Search cancelled for privacy reasons.</div>`;
+            return;
+        }
+        if (service === "Mental Health") results = [...results, ...clinicsData.filter(c => c.services.includes("Mental Health"))];
+        if (service === "STD Testing") results = [...results, ...clinicsData.filter(c => c.services.includes("STD Testing"))];
+        results = [...new Map(results.map(c => [c.id, c])).values()];
+        document.getElementById('homeResults').innerHTML = `<h3>Search Results (${results.length})</h3><div style="display:grid; gap:15px;">${results.map(c => clinicCardHtml(c)).join('')}</div>`;
+    }
+
+    function useMyLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(pos => {
+                let nearest = clinicsData.map(c => ({...c, dist: Math.hypot(c.lat-pos.coords.latitude, c.lng-pos.coords.longitude)})).sort((a,b)=>a.dist-b.dist).slice(0,8);
+                document.getElementById('homeResults').innerHTML = `<h3>Clinics near you</h3><div style="display:grid; gap:15px;">${nearest.map(c => clinicCardHtml(c)).join('')}</div>`;
+            });
+        } else alert("Geolocation not supported");
+    }
+
+    function renderSearchMapPage() {
+        const content = document.getElementById('dashboardContent');
+        content.innerHTML = `
+            <div class="container">
+                <div class="filters">
+                    <div class="filter-group"><label>📍 District</label><input type="text" id="filterDistrict" placeholder="e.g., Kampala"></div>
+                    <div class="filter-group"><label>🏥 Service</label><select id="filterService"><option value="">All</option><option>Maternity</option><option>General Consultation</option><option>Pharmacy</option><option>HIV/AIDS</option><option>Mental Health</option><option>STD Testing</option></select></div>
+                    <div class="filter-group"><label>💊 Medicine</label><input type="text" id="filterMedicine" placeholder="e.g., Amoxicillin"></div>
+                    <button class="btn-sm" onclick="applyMapFilters()">🔍 Filter</button>
+                    <button class="location-btn" onclick="useMyLocationMap()">📍 My Location</button>
+                </div>
+                <div class="results-layout">
+                    <div id="mapView" class="map-container"></div>
+                    <div id="listView" class="list-container">Loading map...</div>
+                </div>
+            </div>
+        `;
+        setTimeout(() => initMap(), 100);
+        window.applyMapFilters = applyMapFilters;
+        window.useMyLocationMap = useMyLocationMap;
+    }
+
+    function initMap() {
+        if (currentMapInstance) currentMapInstance.remove();
+        currentMapInstance = L.map('mapView').setView([0.3136, 32.5811], 7);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
+        }).addTo(currentMapInstance);
+        applyMapFilters();
+    }
+
+    function applyMapFilters() {
+        const district = document.getElementById('filterDistrict')?.value.trim() || '';
+        const service = document.getElementById('filterService')?.value || '';
+        const medicine = document.getElementById('filterMedicine')?.value.trim() || '';
+        let filtered = clinicsData.filter(c => !c.sensitive);
+        if (district) filtered = filtered.filter(c => c.district.toLowerCase().includes(district.toLowerCase()));
+        if (service) filtered = filtered.filter(c => c.services.includes(service));
+        if (medicine) filtered = filtered.filter(c => c.medicines.some(m => m.toLowerCase().includes(medicine.toLowerCase())));
+        updateMapAndList(filtered);
+    }
+
+    function updateMapAndList(clinicsArray) {
+        if (!currentMapInstance) return;
+        currentMarkers.forEach(m => currentMapInstance.removeLayer(m));
+        currentMarkers = [];
+        const bounds = [];
+        clinicsArray.forEach(c => {
+            const marker = L.marker([c.lat, c.lng]).addTo(currentMapInstance);
+            marker.bindPopup(`<b>${c.name}</b><br>${c.district}<br>🕒 ${c.opening} - ${c.closing}<br><button onclick="viewClinicDetails(${c.id})">Details</button>`);
+            currentMarkers.push(marker);
+            bounds.push([c.lat, c.lng]);
+        });
+        if (bounds.length) currentMapInstance.fitBounds(bounds);
+        else currentMapInstance.setView([0.3136, 32.5811], 6);
+        const listDiv = document.getElementById('listView');
+        if (clinicsArray.length === 0) listDiv.innerHTML = '<div style="padding:20px;">No clinics found.</div>';
+        else listDiv.innerHTML = clinicsArray.map(c => clinicCardHtml(c)).join('');
+    }
+
+    function useMyLocationMap() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(pos => {
+                currentMapInstance.setView([pos.coords.latitude, pos.coords.longitude], 12);
+                let nearest = clinicsData.map(c => ({...c, dist: Math.hypot(c.lat-pos.coords.latitude, c.lng-pos.coords.longitude)})).sort((a,b)=>a.dist-b.dist).slice(0,8);
+                updateMapAndList(nearest);
+            });
+        }
+    }
+
+    function renderArticlesPage() {
+        const content = document.getElementById('dashboardContent');
+        const safeArts = articles.filter(a => !a.sensitive);
+        content.innerHTML = `<div class="container"><h2>📚 Health Education</h2><div style="display:grid; gap:20px;">${safeArts.map(a => `<div class="clinic-card"><h3>${a.title}</h3><p>${a.content}</p></div>`).join('')}</div></div>`;
+    }
+
+    // ----- CLINIC ADMIN PANEL -----
+    function renderClinicAdminPanel() {
+        const myClinic = clinicsData.find(c => c.id === currentUser.clinicId);
+        if (!myClinic) {
+            document.getElementById('dashboardContent').innerHTML = `<div class="container"><p>No clinic assigned. Contact main admin.</p></div>`;
+            return;
+        }
+        const content = document.getElementById('dashboardContent');
+        content.innerHTML = `
+            <div class="container">
+                <h2>🏥 Clinic Admin: ${myClinic.name}</h2>
+                <div class="admin-panel">
+                    <div class="form-row">
+                        <input type="text" id="clinicName" value="${myClinic.name}" placeholder="Clinic Name">
+                        <input type="text" id="clinicPhone" value="${myClinic.phone}" placeholder="Phone">
+                        <input type="text" id="clinicOpen" value="${myClinic.opening}" placeholder="Opening Hour">
+                        <input type="text" id="clinicClose" value="${myClinic.closing}" placeholder="Closing Hour">
+                    </div>
+                    <div class="form-row">
+                        <input type="text" id="newService" placeholder="Add new service (e.g., Dental)">
+                        <button class="btn-sm" onclick="addClinicService()">➕ Add Service</button>
+                    </div>
+                    <div class="form-row">
+                        <label>Update Medicine Stock:</label>
+                        <select id="medicineSelect">${myClinic.medicines.map(m => `<option>${m}</option>`).join('')}</select>
+                        <select id="stockStatus"><option>In Stock</option><option>Low Stock</option><option>Out of Stock</option></select>
+                        <button class="btn-sm" onclick="updateStock()">Update Stock</button>
+                    </div>
+                    <button class="btn-sm" onclick="saveClinicChanges()">💾 Save All Changes</button>
+                </div>
+            </div>
+        `;
+        window.currentClinic = myClinic;
+        window.addClinicService = function() {
+            let svc = document.getElementById('newService').value.trim();
+            if (svc && window.currentClinic) {
+                window.currentClinic.services.push(svc);
+                alert(`Service "${svc}" added.`);
+            }
+        };
+        window.updateStock = function() {
+            alert("Stock updated (demo). In real system this would persist.");
+        };
+        window.saveClinicChanges = function() {
+            window.currentClinic.name = document.getElementById('clinicName').value;
+            window.currentClinic.phone = document.getElementById('clinicPhone').value;
+            window.currentClinic.opening = document.getElementById('clinicOpen').value;
+            window.currentClinic.closing = document.getElementById('clinicClose').value;
+            saveClinics();
+            alert("Clinic information saved.");
+        };
+    }
+
+    // ----- HEALTHBRIDGE ADMIN PANEL -----
+    function renderHealthBridgeAdmin() {
+        const content = document.getElementById('dashboardContent');
+        content.innerHTML = `
+            <div class="container">
+                <h2>⭐ HealthBridge Administrator</h2>
+                <div class="admin-panel">
+                    <p>Total clinics: ${clinicsData.length} | Verified: ${clinicsData.filter(c=>c.verified).length}</p>
+                    <button class="btn-sm" onclick="showVerifyList()">✅ Verify Clinics</button>
+                    <button class="btn-sm" onclick="generateReport()">📊 Generate Report</button>
+                    <button class="btn-sm" onclick="manageArticlesAdmin()">📝 Manage Articles</button>
+                </div>
+                <div id="adminDynamicArea"></div>
+            </div>
+        `;
+        window.showVerifyList = function() {
+            let unverified = clinicsData.filter(c => !c.verified);
+            document.getElementById('adminDynamicArea').innerHTML = `<h3>Pending Verification</h3>${unverified.map(c => `<div class="clinic-card">${c.name} <button class="btn-sm" onclick="verifyClinic(${c.id})">Verify</button></div>`).join('')}`;
+        };
+        window.verifyClinic = function(id) {
+            let clinic = clinicsData.find(c=>c.id===id);
+            if(clinic) clinic.verified = true;
+            saveClinics();
+            showVerifyList();
+        };
+        window.generateReport = function() {
+            let report = `HEALTHBRIDGE REPORT\nTotal clinics: ${clinicsData.length}\nVerified: ${clinicsData.filter(c=>c.verified).length}\nServices: ${[...new Set(clinicsData.flatMap(c=>c.services))].join(", ")}`;
+            document.getElementById('adminDynamicArea').innerHTML = `<pre style="background:white; padding:15px;">${report}</pre>`;
+        };
+        window.manageArticlesAdmin = function() {
+            let list = articles.map((a,i)=>`<div><b>${a.title}</b> <button onclick="deleteArticle(${i})">Delete</button></div>`).join('');
+            document.getElementById('adminDynamicArea').innerHTML = `${list}<hr><input id="newArtTitle" placeholder="Title"><textarea id="newArtContent" placeholder="Content"></textarea><button onclick="addArticle()">Add Article</button>`;
+        };
+        window.deleteArticle = function(idx) { articles.splice(idx,1); manageArticlesAdmin(); };
+        window.addArticle = function() {
+            let t = document.getElementById('newArtTitle')?.value;
+            let c = document.getElementById('newArtContent')?.value;
+            if(t && c) articles.push({id:Date.now(), title:t, content:c, category:"General", sensitive:false});
+            manageArticlesAdmin();
+        };
+    }
+
+    // Shared: clinic details modal
+    window.viewClinicDetails = function(id) {
+        const clinic = clinicsData.find(c => c.id === id);
+        if (!clinic) return;
+        let modalDiv = document.getElementById('globalModal');
+        if (!modalDiv) {
+            modalDiv = document.createElement('div');
+            modalDiv.id = 'globalModal';
+            modalDiv.className = 'modal';
+            modalDiv.innerHTML = `<div class="modal-content"><span style="float:right;font-size:28px;cursor:pointer;" onclick="closeModal()">&times;</span><div id="modalBody"></div></div>`;
+            document.body.appendChild(modalDiv);
+        }
+        document.getElementById('modalBody').innerHTML = `<h2>${clinic.name}</h2><p>📍 ${clinic.district}, ${clinic.parish}<br>📞 ${clinic.phone}<br>🕒 ${clinic.opening} – ${clinic.closing}<br>💊 Medicines: ${clinic.medicines.join(', ')}<br>🏥 Services: ${clinic.services.join(', ')}</p>`;
+        modalDiv.style.display = 'flex';
+    };
+    window.closeModal = function() {
+        const modal = document.getElementById('globalModal');
+        if (modal) modal.style.display = 'none';
+    };
+
+    // Start app
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        renderRoleDashboard();
+    } else {
+        showAuthScreen(true);
+    }
+</script>
+</body>
+</html>

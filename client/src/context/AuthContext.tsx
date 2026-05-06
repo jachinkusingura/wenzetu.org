@@ -25,10 +25,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(false);
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string, role?: string) => {
     setLoading(true);
     try {
-      const response = await authService.login({ email, password });
+      const response = await authService.login({ email, password, role });
       setUser(response.user as User);
       setToken(response.token);
       localStorage.setItem('authToken', response.token);
@@ -40,7 +40,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(false);
   };
 
-  const register = async (email: string, password: string, firstName: string, lastName: string) => {
+  const register = async (email: string, password: string, firstName: string, lastName: string, role?: string) => {
     setLoading(true);
     try {
       const response = await authService.register({
@@ -48,6 +48,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         password,
         first_name: firstName,
         last_name: lastName,
+        role,
       });
       setUser(response.user as User);
       setToken(response.token);

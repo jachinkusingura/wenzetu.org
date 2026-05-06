@@ -10,6 +10,83 @@
       "is_active": true,
       "created_at": "2026-05-05T07:28:00Z",
       "updated_at": "2026-05-05T07:28:00Z"
+    },
+    {
+      "id": 2,
+      "email": "jachinkusingura60@gmail.com",
+      "password": "$2a$10$uwNukxEzFZBPvPd5NFcqe.U1emtKunxMGJh0D1lJunVcz7cwuliuC",
+      "first_name": "jachin",
+      "last_name": "kusingura",
+      "role": "patient",
+      "is_active": true,
+      "created_at": "2026-05-05T16:47:18.259Z",
+      "updated_at": "2026-05-05T16:47:18.259Z"
+    },
+    {
+      "id": 3,
+      "email": "jachinkusingura55@gmail.com",
+      "password": "$2a$10$zFETrwLk3/LNAy7ELvATdOHvy9KkRrYFcILuDLfEjGOJOR2z1ZNCq",
+      "first_name": "jhan",
+      "last_name": "kusingura",
+      "role": "clinic_admin",
+      "is_active": true,
+      "created_at": "2026-05-06T11:57:23.176Z",
+      "updated_at": "2026-05-06T11:57:23.176Z"
+    },
+    {
+      "id": 4,
+      "email": "jachinkusingura@gmail.com",
+      "password": "$2a$10$YR9DFsCyZz3rXBJQOSZYWex1zTGEmUAEdTtl0.O7HY.w6vpbTSD0S",
+      "first_name": "dan",
+      "last_name": "dan",
+      "role": "hb_admin",
+      "is_active": true,
+      "created_at": "2026-05-06T12:08:34.845Z",
+      "updated_at": "2026-05-06T12:08:34.845Z"
+    },
+    {
+      "id": 5,
+      "email": "jachinkusingura56@gmail.com",
+      "password": "$2a$10$NMseAx2DWxYDmTFHYVABw.32l/kqWJpQ8asjesJJ15ZxbYNZV3VO2",
+      "first_name": "kerry",
+      "last_name": "dan",
+      "role": "clinic_admin",
+      "is_active": true,
+      "created_at": "2026-05-06T12:18:03.422Z",
+      "updated_at": "2026-05-06T12:18:03.422Z"
+    },
+    {
+      "id": 6,
+      "email": "katodan@gmail.com",
+      "password": "$2a$10$HzA.A0jSn007rpTRRa135eDWW0FmxeAabm.Rgk9blAXe4fIJighZ6",
+      "first_name": "kato",
+      "last_name": "dan",
+      "role": "clinic_admin",
+      "is_active": true,
+      "created_at": "2026-05-06T12:19:21.788Z",
+      "updated_at": "2026-05-06T12:19:21.788Z"
+    },
+    {
+      "id": 7,
+      "email": "gumajtk@gmail.com",
+      "password": "$2a$10$h9WT/c7dZbiaKiFzkDxQ..q/TRJrpwXFC7o9nOmdWEy2.KbfduTqm",
+      "first_name": "guma",
+      "last_name": "jtk",
+      "role": "hb_admin",
+      "is_active": true,
+      "created_at": "2026-05-06T12:25:18.927Z",
+      "updated_at": "2026-05-06T12:25:18.927Z"
+    },
+    {
+      "id": 8,
+      "email": "james@gmail.com",
+      "password": "$2a$10$dbE12jHP9w9U/G6goUJ7POY/gHpP.kHeID4JzC4SyfVLI1D65ity2",
+      "first_name": "james",
+      "last_name": "dan",
+      "role": "clinic_admin",
+      "is_active": true,
+      "created_at": "2026-05-06T12:36:32.601Z",
+      "updated_at": "2026-05-06T12:36:32.601Z"
     }
   ],
   "clinics": [

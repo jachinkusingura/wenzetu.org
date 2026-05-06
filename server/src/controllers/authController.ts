@@ -3,9 +3,9 @@ import bcryptjs from 'bcryptjs';
 import { AuthRequest, AuthResponse, User } from '../types/index.js';
 import * as db from '../database/connection.js';
 
-export async function register(data: AuthRequest & { first_name?: string; last_name?: string }): Promise<AuthResponse> {
+export async function register(data: AuthRequest & { first_name?: string; last_name?: string; role?: string }): Promise<AuthResponse> {
   console.log('Registration attempt with data:', { ...data, password: '***' });
-  const { email, password, first_name, last_name } = data;
+  const { email, password, first_name, last_name, role } = data;
 
   // Validation
   if (!email || !password) {
@@ -42,7 +42,8 @@ export async function register(data: AuthRequest & { first_name?: string; last_n
     ? 'INSERT INTO users (email, password, first_name, last_name, role) VALUES (?, ?, ?, ?, ?) RETURNING id'
     : 'INSERT INTO users (email, password, first_name, last_name, role) VALUES (?, ?, ?, ?, ?)';
 
-  const result = await db.execute(insertQuery, [email, hashedPassword, first_name || null, last_name || null, 'patient']);
+  const userRole = role || 'patient';
+  const result = await db.execute(insertQuery, [email, hashedPassword, first_name || null, last_name || null, userRole]);
   
   console.log('Registration database result:', result);
   
@@ -57,7 +58,7 @@ export async function register(data: AuthRequest & { first_name?: string; last_n
 
   // Generate token
   const token = jwt.sign(
-    { id: userId, email, role: 'patient' },
+    { id: userId, email, role: userRole },
     process.env.JWT_SECRET || 'secret',
     { expiresIn: (process.env.JWT_EXPIRE || '7d') as any }
   );
@@ -67,7 +68,7 @@ export async function register(data: AuthRequest & { first_name?: string; last_n
     email,
     first_name: first_name || '',
     last_name: last_name || '',
-    role: 'patient' as const,
+    role: userRole as any,
     is_active: true,
     created_at: new Date(),
     updated_at: new Date()
@@ -76,8 +77,8 @@ export async function register(data: AuthRequest & { first_name?: string; last_n
   return { token, user };
 }
 
-export async function login(data: AuthRequest): Promise<AuthResponse> {
-  const { email, password } = data;
+export async function login(data: AuthRequest & { role?: string }): Promise<AuthResponse> {
+  const { email, password, role } = data;
 
   // Validation
   if (!email || !password) {
@@ -95,6 +96,13 @@ export async function login(data: AuthRequest): Promise<AuthResponse> {
   if (!user) {
     const error: any = new Error('Invalid credentials');
     error.status = 401;
+    throw error;
+  }
+
+  // Check role if provided
+  if (role && user.role !== role) {
+    const error: any = new Error('Selected role does not match user account');
+    error.status = 403;
     throw error;
   }
 

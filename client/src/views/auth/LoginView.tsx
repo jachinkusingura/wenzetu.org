@@ -14,6 +14,7 @@ declare global {
 const LoginView: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('patient');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -131,10 +132,18 @@ const LoginView: React.FC = () => {
 
     try {
       const normalizedEmail = email.trim().toLowerCase();
-      console.log('Login attempt for:', normalizedEmail);
-      await login(normalizedEmail, password);
+      console.log('Login attempt for:', normalizedEmail, 'as', role);
+      const response = await login(normalizedEmail, password, role);
       console.log('Login successful, navigating...');
-      navigate('/patient/dashboard');
+      
+      // Role-based redirection
+      if (role === 'hb_admin') {
+        navigate('/admin/dashboard');
+      } else if (role === 'clinic_admin') {
+        navigate('/clinic/dashboard');
+      } else {
+        navigate('/patient/dashboard');
+      }
     } catch (err: any) {
       console.error('Login component error:', err);
       setError(err.response?.data?.error || err.message || 'Login failed. Please try again.');
@@ -187,6 +196,22 @@ const LoginView: React.FC = () => {
             required
             className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
           />
+        </div>
+
+        {/* Role */}
+        <div>
+          <label className="block text-sm font-semibold text-neutral-900 mb-2">
+            Sign in as
+          </label>
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all bg-white"
+          >
+            <option value="patient">Community Member</option>
+            <option value="clinic_admin">Clinical Administrator</option>
+            <option value="hb_admin">HealthBridge Admin</option>
+          </select>
         </div>
 
         {/* Remember & Forgot */}
