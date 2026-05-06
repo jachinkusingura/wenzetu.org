@@ -203,14 +203,25 @@ const HealthBridgeAdminDashboard: React.FC = () => {
                     ))}
                  </div>
               )}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+           </div>
+         )}
 
-        {activeTab === 'articles' && (
-          <div className="space-y-6">
+         {activeTab === 'reports' && (
+           <div className="py-20 text-center animate-in fade-in zoom-in-95 duration-700">
+              <div className="w-32 h-32 bg-primary-50 rounded-[3rem] flex items-center justify-center mx-auto mb-10 shadow-inner transform -rotate-6">
+                 <Icon name="chart-bar" size={60} className="text-primary-600" />
+              </div>
+              <h2 className="text-4xl font-black text-neutral-900 mb-4 font-outfit">Intelligence Reports</h2>
+              <p className="text-neutral-500 max-w-lg mx-auto font-medium mb-12 text-lg">Generate encrypted analytical reports covering facility density, service availability, and community health trends.</p>
+              <button className="px-12 py-5 bg-[#0f1715] hover:bg-neutral-800 text-white rounded-[1.5rem] font-black transition-all shadow-2xl flex items-center gap-4 mx-auto group">
+                 <Icon name="file-text" size={24} className="group-hover:translate-x-2 transition-transform" />
+                 Download Master Analytics
+              </button>
+           </div>
+         )}
+
+         {activeTab === 'articles' && (
+          <div className="space-y-6 animate-in fade-in zoom-in-95 duration-700">
              <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold text-neutral-900 font-outfit">Health Education Management</h2>
                <button className="px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-sm font-bold shadow-lg shadow-primary-600/20 flex items-center gap-2 transition-all active:scale-95">
