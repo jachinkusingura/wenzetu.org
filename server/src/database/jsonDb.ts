@@ -65,6 +65,7 @@ class JsonDb {
   }
 
   public async query(sql: string, values: any[] = []): Promise<any> {
+    console.log(`📂 JSON DB Query: "${sql}"`, values);
     const normalizedSql = sql.trim().toLowerCase();
     
     // SELECT * FROM users WHERE email = ?

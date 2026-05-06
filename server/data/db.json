@@ -87,6 +87,127 @@
       "is_active": true,
       "created_at": "2026-05-06T12:36:32.601Z",
       "updated_at": "2026-05-06T12:36:32.601Z"
+    },
+    {
+      "id": 9,
+      "email": "jahn@gmail.com",
+      "password": "$2a$10$A2CBiHYnCtGrF3sA23fTj.8udEZnAoafMRu6pU/BtzSC.STA9Bphq",
+      "first_name": "jahn",
+      "last_name": "dan",
+      "role": "patient",
+      "is_active": true,
+      "created_at": "2026-05-06T14:40:38.288Z",
+      "updated_at": "2026-05-06T14:40:38.288Z"
+    },
+    {
+      "id": 10,
+      "email": "jahn1@gmail.com",
+      "password": "$2a$10$9zHZBGKY8T37J8ahyxpXSevvDk4rGLH1c797RkyohlJw.DL4ku82e",
+      "first_name": "jahn ",
+      "last_name": "danoo",
+      "role": "hb_admin",
+      "is_active": true,
+      "created_at": "2026-05-06T14:44:14.918Z",
+      "updated_at": "2026-05-06T14:44:14.918Z"
+    },
+    {
+      "id": 11,
+      "email": "peter@gmail.com",
+      "password": "$2a$10$lUTxkfWQ3dlpT/3Nu8riEOhHfIJWMvWu78O7O4Rkuxvk8kaIKGrOC",
+      "first_name": "peter",
+      "last_name": "rwaki",
+      "role": "clinic_admin",
+      "is_active": true,
+      "created_at": "2026-05-06T14:47:15.407Z",
+      "updated_at": "2026-05-06T14:47:15.407Z"
+    },
+    {
+      "id": 12,
+      "email": "steven@gmail.com",
+      "password": "$2a$10$VfljVewGHxZ3fV6TMMnpF.Uf5GULLCB4velrRDtYsY1.wYDvA0AEm",
+      "first_name": "guma ",
+      "last_name": "steven",
+      "role": "patient",
+      "is_active": true,
+      "created_at": "2026-05-06T14:48:56.029Z",
+      "updated_at": "2026-05-06T14:48:56.029Z"
+    },
+    {
+      "id": 13,
+      "email": "daniel@gmail.com",
+      "password": "$2a$10$848zwBQF/qXQrBVYkaQY..ts5/Q6RWtvTjEnYoF8f4etZWAEsM.Om",
+      "first_name": "peter",
+      "last_name": "daniel",
+      "role": "clinic_admin",
+      "is_active": true,
+      "created_at": "2026-05-06T16:42:03.087Z",
+      "updated_at": "2026-05-06T16:42:03.087Z"
+    },
+    {
+      "id": 14,
+      "email": "kusingura@gmail.com",
+      "password": "$2a$10$4l4o3raUr.qVAi0EWd8oG.qzNRFrb2uBIGgGC61PaB.PxrAed2MXu",
+      "first_name": "jachin",
+      "last_name": "kusingura",
+      "role": "hb_admin",
+      "is_active": true,
+      "created_at": "2026-05-06T16:44:46.005Z",
+      "updated_at": "2026-05-06T16:44:46.005Z"
+    },
+    {
+      "id": 15,
+      "email": "mujuni@gmail.com",
+      "password": "$2a$10$n2m3eHvIRs1hARdlHBY.BucRmRwgN4whqb1xRrymUxmOj9L79qcFK",
+      "first_name": "peter",
+      "last_name": "mujuni",
+      "role": "clinic_admin",
+      "is_active": true,
+      "created_at": "2026-05-06T16:54:38.667Z",
+      "updated_at": "2026-05-06T16:54:38.667Z"
+    },
+    {
+      "id": 16,
+      "email": "clianjames@gmail.com",
+      "password": "$2a$10$6XErEys.jwKNEOLQuE4nieOzZk7JSV0VTFS90btDwdax3D09VW...",
+      "first_name": "clian",
+      "last_name": "james",
+      "role": "patient",
+      "is_active": true,
+      "created_at": "2026-05-06T17:06:31.446Z",
+      "updated_at": "2026-05-06T17:06:31.446Z"
+    },
+    {
+      "id": 17,
+      "email": "tomdie@gmail.com",
+      "password": "$2a$10$T8ntHq2X/1w.PqCw1brHS.i/qtHrOCqp6VY90UFIPlwJRofQnSrAC",
+      "first_name": "tom",
+      "last_name": "diee",
+      "role": "patient",
+      "is_active": true,
+      "created_at": "2026-05-06T17:14:02.061Z",
+      "updated_at": "2026-05-06T17:14:02.061Z"
+    },
+    {
+      "id": 18,
+      "email": "merrydean@gmail.com",
+      "password": "$2a$10$tO3V7g/KygQlGZBuUVBpZeUiFdKAKgaFN4FIum1MKkwmqQhbYisgy",
+      "first_name": "merry",
+      "last_name": "dean",
+      "role": "clinic_admin",
+      "is_active": true,
+      "created_at": "2026-05-06T17:17:35.555Z",
+      "updated_at": "2026-05-06T17:17:35.555Z"
+    },
+    {
+      "id": 19,
+      "email": "henrymatao@gmail.com",
+      "password": "$2a$10$b5Du5Ig1OcBy/3wJhVFc9ONCwu1R3OcIC8IRal4kHhV/J/xpDF2su",
+      "first_name": "henry",
+      "last_name": "matayo",
+      "role": "hb_admin",
+      "is_active": true,
+      "created_at": "2026-05-06T17:20:55.085Z",
+      "updated_at": "2026-05-06T17:20:55.085Z"
     }
   ],
   "clinics": [
@@ -98,7 +219,10 @@
       "is_active": true,
       "is_verified": true,
       "rating": 4.8,
-      "total_reviews": 120
+      "total_reviews": 120,
+      "phone": "0788316077",
+      "opening_time": "04:59",
+      "closing_time": "04:04"
     }
   ],
   "services": [
@@ -107,11 +231,28 @@
       "clinic_id": 1,
       "name": "General Consultation",
       "price": 50
+    },
+    {
+      "id": 2,
+      "clinic_id": 1,
+      "name": "radiology"
     }
   ],
   "appointments": [],
-  "medicines": [],
-  "medicine_inventory": [],
+  "medicines": [
+    {
+      "id": 1,
+      "name": "Amoxicillin"
+    }
+  ],
+  "medicine_inventory": [
+    {
+      "id": 1,
+      "clinic_id": 1,
+      "medicine_id": 1,
+      "status": "Out of Stock"
+    }
+  ],
   "reviews": [],
   "saved_clinics": [],
   "notifications": [],
